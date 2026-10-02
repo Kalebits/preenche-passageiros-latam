@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Preenche Passageiros LATAM · opções</title>
+<style>
+  body { max-width: 600px; margin: 40px auto; padding: 0 16px; font: 15px/1.55 system-ui, "Segoe UI", sans-serif; color: #18181b; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h2 { font-size: 17px; margin: 26px 0 8px; }
+  ol { padding-left: 22px; } li { margin-bottom: 8px; }
+  code { background: #f4f4f5; padding: 1px 5px; border-radius: 4px; }
+  input { width: 100%; box-sizing: border-box; padding: 10px; font: inherit; border: 1px solid #a1a1aa; border-radius: 8px; }
+  button { margin-top: 10px; padding: 10px 18px; font: inherit; font-weight: 600; border: 0; border-radius: 8px; background: #16a34a; color: #fff; cursor: pointer; }
+  .aviso { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 14px; }
+  #estado { margin-left: 10px; font-weight: 600; }
+  .ok { color: #16a34a; } .ruim { color: #dc2626; }
+</style>
+</head>
+<body>
+  <h1>Preenche Passageiros LATAM</h1>
+  <p>Lê fotos de passaporte, RG e CNH (ou o texto que você colar) e preenche os passageiros no site da LATAM.
+    Texto simples é lido no próprio navegador; para ler <b>fotos</b>, ela usa o Google Gemini com uma chave <b>sua</b>, que é grátis.</p>
+
+  <h2>Como gerar a sua chave (uma vez, uns 2 minutos)</h2>
+  <ol>
+    <li>Abra <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> e entre com a sua conta Google (Gmail).</li>
+    <li>Na primeira vez, aceite os termos de uso que aparecem.</li>
+    <li>Clique em <b>"Create API key"</b> (ou "Criar chave de API").</li>
+    <li>Se pedir um projeto, escolha criar em um projeto novo (qualquer nome serve).</li>
+    <li>A chave aparece na tela: um texto comprido (começa com <code>AIza</code> ou <code>AQ.</code>). Clique em <b>copiar</b>.</li>
+    <li>Volte aqui, cole no campo abaixo e clique em <b>Salvar</b>.</li>
+  </ol>
+  <p>Não precisa de cartão de crédito. O plano grátis tem um limite de leituras por dia; se acabar, espere algumas horas
+    ou preencha à mão. <b>Não compartilhe a sua chave</b>: cada pessoa gera a dela.</p>
+
+  <p class="aviso"><b>Atenção (LGPD):</b> as fotos de documento e os dados são enviados ao Google. No plano grátis do
+    Gemini, o Google pode usar o conteúdo enviado para melhorar os produtos dele. Use só com a ciência de quem é dono
+    dos dados. No plano pago do Gemini isso não acontece.</p>
+
+  <h2>Sua chave</h2>
+  <label>Chave do Gemini <input id="chave" type="password" autocomplete="off" placeholder="Cole aqui a sua chave"></label>
+  <button id="salvar">Salvar</button><span id="estado"></span>
+
+  <h2>Contato padrão (opcional)</h2>
+  <p>A LATAM exige e-mail e telefone em todo passageiro. Pedidos como o do Bank não trazem: preencha aqui o contato
+    que deve ir nesses casos. Ele só é usado quando o passageiro vier sem e-mail ou sem telefone.</p>
+  <label>E-mail <input id="email-padrao" type="email" autocomplete="off" placeholder="contato@empresa.com"></label>
+  <label>Telefone com DDD <input id="telefone-padrao" autocomplete="off" placeholder="(11) 91234-5678"></label>
+  <button id="salvar-contato">Salvar contato</button><span id="estado-contato"></span>
+  <script src="opcoes.js"></script>
+</body>
+</html>

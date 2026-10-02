@@ -1,0 +1,109 @@
+PREENCHE PASSAGEIROS LATAM - COMO INSTALAR NO NAVEGADOR
+=======================================================
+
+Funciona no Chrome, Brave, Opera, Opera GX e Edge. Não funciona no Firefox.
+
+
+1) DEIXE A PASTA NUM LUGAR FIXO
+-------------------------------
+- Se você recebeu um .zip ou .7z, EXTRAIA primeiro (botão direito > Extrair tudo).
+- Coloque a pasta da extensão num lugar fixo, por exemplo em Documentos.
+- Não apague nem mova essa pasta depois: o navegador usa a extensão direto dela.
+- Não dê dois cliques nos arquivos .js. Eles só funcionam dentro do navegador.
+
+
+2) ABRA A PÁGINA DE EXTENSÕES
+-----------------------------
+Digite na barra de endereço e aperte Enter:
+- Chrome ........ chrome://extensions
+- Brave ......... brave://extensions
+- Opera/Opera GX  opera://extensions
+- Edge .......... edge://extensions
+
+
+3) LIGUE O "MODO DO DESENVOLVEDOR"
+----------------------------------
+É uma chave no canto superior direito da página (no Edge fica no menu da esquerda).
+
+
+4) CARREGUE A EXTENSÃO
+----------------------
+- Clique em "Carregar sem compactação" (ou "Load unpacked").
+- Escolha a pasta da extensão (a que tem o arquivo manifest.json dentro).
+- Vai aparecer o card "Preenche Passageiros LATAM".
+
+
+5) OPÇÕES: CHAVE DO GEMINI E CONTATO PADRÃO
+-------------------------------------------
+A tela de opções abre sozinha depois de instalar. Se não abrir, clique no ícone da
+extensão na barra (quebra-cabeça > Preenche Passageiros LATAM).
+
+Chave do Gemini (só para ler FOTOS de documento):
+1. Abra aistudio.google.com/apikey e entre com a sua conta Google (Gmail).
+2. Na primeira vez, aceite os termos.
+3. Clique em "Create API key" (crie num projeto novo, se pedir).
+4. Copie a chave (texto comprido que começa com "AIza" ou "AQ.").
+5. Cole na tela de opções da extensão e clique em Salvar.
+   Tem que aparecer "Chave salva e testada".
+
+- É grátis e não pede cartão. Cada pessoa usa A PRÓPRIA chave: não compartilhe.
+- Nunca mande a chave por chat, e-mail ou print.
+- Sem chave, a extensão ainda lê TEXTO (nome, CPF, nascimento, e-mail, telefone)
+  e o pedido do Bank inteiro.
+- Atenção (LGPD): fotos de documento vão para o Google. No plano grátis do Gemini,
+  o Google pode usar o que é enviado para melhorar os produtos dele.
+
+Contato padrão (opcional):
+- A LATAM exige e-mail e telefone em todo passageiro. Pedidos como o do Bank não
+  trazem: coloque aqui o e-mail e o telefone que devem ir nesses casos.
+- Ele só é usado quando o passageiro vier sem e-mail ou sem telefone.
+
+
+6) FIXE O ÍCONE (opcional)
+--------------------------
+Clique no quebra-cabeça da barra do navegador e no alfinete ao lado de
+"Preenche Passageiros LATAM".
+
+
+COMO USAR NA LATAM
+==================
+1. Monte a emissão até a tela de PASSAGEIROS (pagamentos/passageiros).
+2. Clique no botão roxo "Passageiros" (canto inferior direito).
+3. Cole o texto, o pedido do Bank ou as fotos dos documentos e clique em "Ler dados".
+4. Confira os campos de cada passageiro (avisos amarelos = conferir;
+   vermelhos = falta algo).
+5. Clique em "Preencher todos": a extensão preenche e confirma um passageiro por vez
+   ("Confirmar dados") e para no primeiro problema.
+6. No fim, confira tudo e clique em "Continuar" VOCÊ MESMO.
+   A extensão nunca clica em "Continuar" nem faz o pagamento.
+
+Regras que a extensão segue:
+- Nome e sobrenome sem acento (a LATAM não aceita acento nem ç).
+- Brasileiro: CPF só com números. Criança e bebê repetem o CPF no "Nº de documento".
+- Estrangeiro: passaporte ou cédula no "Nº de documento"; nacionalidade e tipo de
+  documento você escolhe (ela avisa e não confirma).
+- Sexo: pelo documento ou pelo nome (aviso amarelo para conferir). Nome que serve
+  para os dois: você escolhe.
+- Um único e-mail ou celular informado vale para todos os passageiros; sem nenhum,
+  vale o contato padrão das opções.
+- E-mail e telefone são obrigatórios: sem eles, ela preenche mas não confirma.
+- Mesmo CPF em dois passageiros: ela não deixa preencher.
+
+
+QUANDO CHEGAR UMA VERSÃO NOVA
+=============================
+1. Troque os arquivos da pasta pelos novos (mesma pasta).
+2. Na página de extensões, clique na setinha circular (recarregar) no card dela.
+3. Atualize a aba da LATAM (F5).
+
+
+SE DER ERRO
+===========
+- Cada "Preencher todos" salva em Downloads um arquivo
+  "preenche-passageiros-latam-registro-AAAA-MM-DD-HHMM.txt".
+  Ele NÃO tem dados pessoais: mande esse arquivo para quem te passou a extensão.
+- "Gemini sobrecarregado (erro 503)": espere um minuto e clique em "Ler dados" de novo.
+- "Acabou a cota grátis do Gemini": espere algumas horas ou digite os dados em texto.
+- Antivírus reclamou ao baixar (ex.: "JS:LockyDownloader"): é um alarme por ser
+  arquivo .js dentro de compactado. Não desligue o antivírus; peça a versão por
+  Google Drive ou WeTransfer, ou confira com quem enviou se os arquivos são os mesmos.
