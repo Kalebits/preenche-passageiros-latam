@@ -58,6 +58,18 @@
     const m = (s || "").match(/(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/);
     return m ? `${m[1].padStart(2, "0")}/${m[2].padStart(2, "0")}/${m[3]}` : "";
   }
+  // Separa data e CPF de dentro de um pedaço ("Nome: 02/02/2019", "CPF 080.330.762-40"): cada valor vira um pedaço
+  // próprio e o rótulo que estava junto ("CPF", "Nascimento") some. Pedaço sem valor (um nome) fica como está.
+  function pedacos(parte) {
+    const achados = [];
+    let resto = parte
+      .replace(/(?<!\d)\d{1,2}[/.-]\d{1,2}[/.-]\d{4}(?!\d)/g, (m) => { achados.push(m); return " "; })
+      .replace(/(?<!\d)\d{3}[.\s]?\d{3}[.\s]?\d{3}[-\s]?\d{2}(?!\d)/g, (m) => { achados.push(m.replace(/\D/g, "")); return " "; });
+    if (achados.length) resto = resto.replace(/\b(data de nascimento|nascimento|nasc|cpf|documento|doc)\b\.?\s*[:=-]?/gi, " ");
+    resto = resto.replace(/\s*[:=-]\s*$/, "").replace(/\s+/g, " ").trim();
+    return [...(resto ? [resto] : []), ...achados];
+  }
+
   function lerTextoLocal(texto) {
     // Pedido Bank: só o bloco de passageiros (o cabeçalho e os voos não são pessoas).
     const pedido = texto.match(/PASSAGEIROS:?\s*\n([\s\S]*?)(?=\n\s*(?:🔗|🔍|EMISS[ÃA]O PRONTA|BUSCAR)|$)/i);
@@ -70,7 +82,7 @@
     const contato = {};
     const lista = blocos.map((bloco) => {
       const p = {};
-      for (const parte of bloco.split(/[\n,;]+/).map((x) => x.trim()).filter(Boolean)) {
+      for (const parte of bloco.split(/[\n,;]+/).flatMap(pedacos).map((x) => x.trim()).filter(Boolean)) {
         const rotulado = parte.match(/^([A-Za-zÀ-ÿ. -]{2,20}?)\s*:\s*(.*)$/);
         const chave = rotulado && ROTULOS.find(([re]) => re.test(norm(rotulado[1])))?.[1];
         if (chave) {
