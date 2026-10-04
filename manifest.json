@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Preenche Passageiros LATAM",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Lê fotos de passaporte, RG e CNH (ou o texto que você colar) e preenche os dados dos passageiros no site da LATAM.",
   "permissions": ["storage"],
   "host_permissions": ["https://*.latamairlines.com/*", "https://generativelanguage.googleapis.com/*"],

@@ -44,7 +44,7 @@ cada passageiro no cartão do tipo dele e segue as mesmas regras que a equipe se
 | CPF | Só números. Criança e bebê repetem o CPF no "Nº de documento", que a LATAM pede para eles |
 | Estrangeiro | Sem CPF: passaporte ou cédula no "Nº de documento". Nacionalidade e tipo de documento ficam para você escolher |
 | Sexo | Do documento ou do pedido. Se não vier, pelo primeiro nome, com aviso para conferir. Nome que serve para os dois fica para você |
-| E-mail e telefone | Obrigatórios. Um só informado vale para todos; sem nenhum, vale o contato padrão das opções |
+| E-mail e telefone | Obrigatórios. Um só e-mail e um só celular informados valem para todos: já aparecem em todos os passageiros e ela marca a caixinha da LATAM de usar o mesmo contato para todos. Sem nenhum, vale o contato padrão das opções |
 | Documento repetido | O mesmo CPF em duas pessoas não existe: ela não deixa preencher |
 
 Quando a mesma palavra aparece no nome e no sobrenome (`MARIA CLARA LIMA` / `LIMA`), ela avisa em amarelo:

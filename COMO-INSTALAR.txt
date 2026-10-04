@@ -84,8 +84,9 @@ Regras que a extensão segue:
   documento você escolhe (ela avisa e não confirma).
 - Sexo: pelo documento ou pelo nome (aviso amarelo para conferir). Nome que serve
   para os dois: você escolhe.
-- Um único e-mail ou celular informado vale para todos os passageiros; sem nenhum,
-  vale o contato padrão das opções.
+- Um único e-mail e um único celular informados valem para todos os passageiros:
+  já aparecem em todos e ela marca, no 1º passageiro, a caixinha da LATAM de usar
+  o mesmo contato para todos. Sem nenhum, vale o contato padrão das opções.
 - E-mail e telefone são obrigatórios: sem eles, ela preenche mas não confirma.
 - Mesmo CPF em dois passageiros: ela não deixa preencher.
 

@@ -75,7 +75,9 @@
     const pedido = texto.match(/PASSAGEIROS:?\s*\n([\s\S]*?)(?=\n\s*(?:🔗|🔍|EMISS[ÃA]O PRONTA|BUSCAR)|$)/i);
     if (pedido) texto = pedido[1];
     const linhas = texto.trim().split(/\n/).map((l) => l.trim());
-    const porLinha = linhas.filter(Boolean).every((l) => /[A-Za-zÀ-ÿ]/.test(l) && /\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}/.test(l));
+    const ehContato = (l) => /@/.test(l) || (/^\D*(\d\D*){10,13}$/.test(l) && !/[A-Za-zÀ-ÿ]{4}/.test(l.replace(/^\s*[A-Za-zÀ-ÿ-]+\s*[:=-]?/, "")) && !/\d{1,2}[/.-]\d{1,2}[/.-]\d{4}/.test(l));
+    const pessoas = linhas.filter(Boolean).filter((l) => !ehContato(l));
+    const porLinha = pessoas.length > 0 && pessoas.every((l) => /[A-Za-zÀ-ÿ]/.test(l) && /\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}/.test(l));
     // Pedido Bank: cada passageiro começa em "Tipo:" (às vezes sem linha em branco entre eles).
     const blocos = porLinha ? linhas.filter(Boolean)
       : texto.trim().split(/\n\s*\n|\n(?=\s*Tipo\s*:)/i).filter((b) => b.trim());
@@ -176,15 +178,41 @@
     return oculto.value === valor;
   }
 
+  // Caixinha da LATAM de usar o mesmo contato para todos os passageiros (pelo texto ao lado dela).
+  let contatoCompartilhado = false; // marcada neste "Preencher todos": os outros passageiros não pedem contato
+  const TEXTO_PARA_TODOS = /(tod[oa]s\s+os\s+(passageiros|viajantes)|mesmos?\s+(dados|contato)|para\s+todos)/i;
+  function textoDaCaixa(caixa) {
+    const ids = (caixa.getAttribute("aria-labelledby") || "").split(/\s+/).filter(Boolean);
+    return [caixa.closest("label")?.innerText, caixa.getAttribute("aria-label"),
+      ...ids.map((id) => document.getElementById(id)?.innerText), caixa.parentElement?.parentElement?.innerText]
+      .filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+  }
+  async function marcarContatoParaTodos(lugar) {
+    const caixas = [...lugar.el.querySelectorAll("input[type=checkbox]"), ...document.querySelectorAll("input[type=checkbox]")];
+    const caixa = caixas.find((c) => TEXTO_PARA_TODOS.test(textoDaCaixa(c)));
+    if (!caixa) { anotar("    Contato para todos: caixinha NÃO ACHADA na página"); return false; }
+    // No registro vai só a frase que bateu (o texto em volta pode ter dado de passageiro).
+    anotar(`    Contato para todos: caixinha "...${textoDaCaixa(caixa).match(TEXTO_PARA_TODOS)[0]}..." ${caixa.checked ? "já marcada" : "marcando"}`);
+    if (!caixa.checked) {
+      (caixa.closest("label") || caixa).click();
+      await esperar(400);
+    }
+    return caixa.checked;
+  }
+
   const recusados = (sufixo) => [...document.querySelectorAll(`[id$="-${sufixo}"][aria-invalid="true"]`)]
     .map((e) => e.id.slice(0, -sufixo.length - 1));
 
-  async function preencher(lugar, p) {
+  async function preencher(lugar, p, contatoDeTodos = false) {
     await abrir(lugar);
     const s = lugar.sufixo;
     const falhas = [];
     const por = (prefixo, valor, nome, soDigitos = false) => {
       const c = document.getElementById(`${prefixo}-${s}`);
+      // Contato já marcado "para todos" no 1º passageiro: a LATAM esconde ou trava esses campos nos outros.
+      if (contatoCompartilhado && /emails|phones/.test(prefixo) && (!c || !visivel(c) || c.disabled || c.readOnly)) {
+        return anotar(`    ${nome}: usa o contato do 1º passageiro (caixinha marcada)`);
+      }
       anotar(`    ${nome}: ${!valor ? "sem dado" : c ? "preenchido" : "CAMPO NÃO ACHADO na página"}`);
       if (!valor) return falhas.push(`${nome} (sem dado)`);
       if (!c) return falhas.push(`${nome} (campo não achado)`);
@@ -213,6 +241,8 @@
     }
     por("passengerInfo-emails", (p.email || "").trim(), "E-mail (obrigatório)");
     por("passengerInfo-phones0-number", telefone(p.telefone), "Telefone (obrigatório)", true);
+    // Um e-mail e um celular só para a reserva toda: marca a caixinha para os outros não precisarem de contato.
+    if (contatoDeTodos && !contatoCompartilhado) contatoCompartilhado = await marcarContatoParaTodos(lugar);
     await esperar(500);
     const doSite = recusados(s);
     if (doSite.length) { anotar(`    LATAM RECUSOU: ${doSite.join(", ")}`); falhas.push(`a LATAM recusou: ${doSite.join(", ")}`); }
@@ -323,7 +353,7 @@
     return anos < 2 ? "INF" : anos < 12 ? "CHD" : "ADT";
   }
 
-  function cartaoPax(p, i, usados) {
+  function cartaoPax(p, i, usados, contatoDeTodos) {
     const caixa = document.createElement("div");
     caixa.className = "pax";
     const avisos = [];
@@ -376,7 +406,7 @@
         res.replaceChildren(aviso("atencao", `Pela idade de hoje esta pessoa é ${NOMES_TIPO[idade]}, e o lugar é ${nomeLugar(lugar)}. A LATAM conta a idade na data do voo: confira.`));
       }
       try {
-        const { falhas, confirmou } = await preencher(lugar, dados);
+        const { falhas, confirmou } = await preencher(lugar, dados, contatoDeTodos);
         if (falhas.length) return recusa(`Preenchi, mas NÃO confirmei. Confira: ${falhas.join(" · ")}`);
         res.replaceChildren(aviso("ok", confirmou ? `${nomeLugar(lugar)} preenchido e confirmado ("Confirmar dados").`
           : `${nomeLugar(lugar)} preenchido, mas não achei o "Confirmar dados": clique você.`));
@@ -414,14 +444,25 @@
       const lista = r?.passageiros || [];
       if (!lista.length) return saida.replaceChildren(aviso("erro", "Não achei passageiros nos dados."));
       const repetidos = documentosRepetidos(lista);
+      // Um único e-mail e um único celular entre os passageiros valem para todos (sem nenhum: o contato padrão
+      // das opções). Já aparecem em todos os cartões e, ao preencher, marcam a caixinha "para todos" da LATAM.
+      const padrao = await chrome.storage.local.get(["email_padrao", "telefone_padrao"]).catch(() => ({}));
+      const unico = {};
+      for (const k of ["email", "telefone"]) {
+        const valores = [...new Set(lista.map((p) => (p[k] || "").trim()).filter(Boolean))];
+        unico[k] = valores.length === 1 ? valores[0] : !valores.length ? padrao[`${k}_padrao`] || "" : "";
+        if (unico[k]) lista.forEach((p) => { p[k] = p[k] || unico[k]; });
+      }
+      const contatoDeTodos = lista.length > 1 && !!unico.email && !!unico.telefone;
       const usados = new Set();
-      const caixas = lista.map((p, i) => cartaoPax(p, i, usados));
+      const caixas = lista.map((p, i) => cartaoPax(p, i, usados, contatoDeTodos));
       const todos = document.createElement("button");
       todos.className = "acao"; todos.textContent = `Preencher todos (${lista.length}) e confirmar um por um`;
       if (repetidos.length) todos.disabled = true; // documento repetido: corrija antes
       // Um passageiro de cada vez; para no primeiro problema. No fim para: "Continuar" é sempre você.
       todos.onclick = async () => {
         todos.disabled = true;
+        contatoCompartilhado = false;
         diario = [];
         const l = lugares();
         anotar(`Preenche Passageiros LATAM v${chrome.runtime.getManifest().version} | ${new Date().toLocaleDateString("pt-BR")}`);
@@ -448,7 +489,8 @@
       };
       const origem = document.createElement("p");
       origem.className = "nota";
-      origem.textContent = local ? "Lido aqui no navegador, sem IA (nada foi enviado ao Google)." : "Lido pelo Gemini.";
+      origem.textContent = (local ? "Lido aqui no navegador, sem IA (nada foi enviado ao Google)." : "Lido pelo Gemini.")
+        + (contatoDeTodos ? " Um e-mail e um celular para todos: vou marcar a caixinha de contato para todos na LATAM." : "");
       saida.replaceChildren(origem, ...repetidos.map((t) => aviso("erro", t + " Corrija antes de preencher.")), todos, ...caixas);
     } catch (e) {
       saida.replaceChildren(aviso("erro", e.message));
